@@ -1,0 +1,164 @@
+// For full API documentation, including code examples, visit http://wix.to/94BuAAs
+import {session} from 'wix-storage';
+import wixWindow from 'wix-window';
+
+$w.onReady(function () {
+	//TODO: write your page related code here...
+
+	$w('#button2').hide()  // hide the button secound phase
+	
+	
+});
+
+
+
+export function button1_click(event) {
+	
+	var box = 1   //number of boxes
+	var playersS = String(parseFloat($w('#input2').value)) //put the user input into a var
+	var playersInt = Number(playersS)  // change the user input from string to number
+	var ammo = 2000 //anout of ammo in a box
+	var base = 70 //base price for player
+	var ammoPrice = 0.15 // price per ball
+	var low = 0   // in use for special case 
+	var boxAdd = String(parseFloat($w('#input3').value))  //user input on add boxes
+	var boxAddInt = 0 //user input on add boxes int
+
+	
+
+    /******************************************
+	 * take the user input on amount of boxes *
+	 * and convert it to numbers              *
+	 ******************************************/
+
+	if ( boxAdd === "NaN"){
+		boxAddInt = 0
+	}
+	else {
+		boxAddInt = Number(boxAdd)
+	}
+
+
+	/**********************************************
+	 * open an error event in case the user input *
+	 * a number bigger the 300 or lower the 4     *
+	 **********************************************/
+
+	if (playersInt < 4){
+		wixWindow.openLightbox("error")
+	}
+	else if (playersInt > 300){
+		wixWindow.openLightbox("error")
+	}
+	
+	/**********************************************
+	 * a switch for the special cases, in case of *
+	 * player amout being between 4 to 8 there a  *
+	 * need to add price. in case of 21 to 23 set *
+	 * the price per player to a solid 95         *
+	 **********************************************/
+	
+	switch (playersInt){
+		case 4:
+			low = 240
+			break;
+		case 5:
+			low = 180
+			break;
+		case 6:
+			low = 120
+			break;
+		case 7:
+			low = 60
+			break;
+		case 21:
+			low = 2
+			break;
+		case 22:
+			low = 2
+			break;
+		case 23:
+			low = 2
+			break;
+	}
+	
+
+	/***************************************
+	 * a loop to make sure the amount of   *
+	 * ammo per players is bigger then 100 *
+	 ***************************************/
+	
+	while (ammo * box / playersInt < 100){
+		box++
+	}
+
+	box = box + boxAddInt // add the user input on the amount of boxes to the tottal amount
+
+
+	/**************************************************************
+	 * if statment for the special case of playersInt = 21,22,23  *
+	 * outputing the tottal amount, the number of ammo per person *
+	 * and the price per person to the user                       *
+	 **************************************************************/
+	if ( low === 2){
+		if (boxAddInt === 0){
+		$w('#text4').text = String(parseInt(ammo * box / playersInt, 10))
+		$w('#text5').text = String(parseFloat($w('#input2').value) * 95)
+		$w('#text6').text = String(parseInt(95 , 10))
+		}
+		else {
+			$w('#text4').text = String(parseInt(ammo * box / playersInt , 10))
+			$w('#text5').text = String(parseFloat($w('#input2').value) * 95 + (boxAddInt * ammo * ammoPrice))
+			$w('#text6').text = String(parseInt(((95 * playersInt) + (boxAddInt * ammo *ammoPrice)) / playersInt , 10) )
+		}
+	}
+	else {
+			$w('#text4').text = String(parseInt(ammo * box / playersInt, 10))
+			$w('#text5').text = String(parseFloat($w('#input2').value) * base  + low + (box * ammo * ammoPrice))
+			$w('#text6').text = String(parseInt(((playersInt * base) + (box * ammo * ammoPrice) + low ) / playersInt ,10))
+	}	
+		
+		/*
+		$w('#text5').text = String(parseFloat($w('#input2').value) * base + low + (box * ammo * ammoPrice)) //overall price
+		$w('#text4').text = String(parseInt( ammo * box / playersInt , 10)) //number of ammo per person
+		$w('#text6').text = String(parseInt(((playersInt * base) + (box * ammo * ammoPrice) + low) / playersInt ,10)) //price per person
+		*/
+		
+		/*************************************
+		 * switch between the buttons phases *
+		 *************************************/
+		$w('#button1').hide()
+		$w('#button2').show()
+
+
+}
+
+
+
+/********************
+ * reset the button * 
+ ********************/
+export function input2_click(event) {
+	//Add your code for this event here: 
+	$w('#button2').hide()
+	$w('#button1').show()
+	
+}
+
+
+export function input3_click(event) {
+	//Add your code for this event here:
+	$w('#button2').hide()
+	$w('#button1').show()
+}
+
+/********************************
+ * reset the extra boxes selction *
+ ********************************/
+export function input2_keyPress(event) {
+	//Add your code for this event here: 
+	if (String(parseFloat($w('#input3').value)) === "NaN"){}
+	else {
+	$w('#input3').value = "NaN"
+	}
+}
